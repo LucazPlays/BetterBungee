@@ -21,16 +21,10 @@ public class CommandBungee extends Command
     public void execute(CommandSender sender, String[] args)
     {
         TextComponent text1 = new TextComponent();
-        text1.addExtra("§eThis server is running §f§lHoly§6§lBungee§e version §f" + BetterBungeeAPI.getHolyBungeeVersion());
-        text1.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/teamholy-network/HolyBungee"));
+        text1.addExtra("§eThis server is running §aBetterBungee§e version §f" + BetterBungeeAPI.getBetterBungeeVersion());
+        text1.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/LucazPlays/BetterBungee"));
         text1.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Link to Github")));
         sender.sendMessage(text1);
-
-        TextComponent text2 = new TextComponent();
-        text2.addExtra("§7BetterBungee Version §f" + BetterBungeeAPI.getBetterBungeeVersion());
-        text2.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/LucazPlays/BetterBungee"));
-        text2.setHoverEvent(new HoverEvent(net.md_5.bungee.api.chat.HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("Link to Github")));
-        sender.sendMessage(text2);
 
         TextComponent text3 = new TextComponent();
         text3.addExtra("§7BungeeCord Version §f#" + BetterBungeeAPI.getBungeecordversion().substring(0, 7));

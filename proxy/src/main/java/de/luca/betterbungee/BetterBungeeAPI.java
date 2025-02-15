@@ -15,7 +15,7 @@ public class BetterBungeeAPI {
     private static final IPChecker ipchecker = new IPChecker();
 
     @Getter
-    private static final String prefix = "§f§lHoly§6§lBungee";
+    private static final String prefix = "§aBetterBungee §8» §7";
 
     @Getter
     private static final String HolyBungeeVersion = "1.0";
