@@ -18,9 +18,6 @@ public class BetterBungeeAPI {
     private static final String prefix = "§aBetterBungee §8» §7";
 
     @Getter
-    private static final String HolyBungeeVersion = "1.0";
-
-    @Getter
     private static final String BetterBungeeVersion = "1.0";
 
     @Getter
