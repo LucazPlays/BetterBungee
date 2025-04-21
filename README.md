@@ -1,4 +1,4 @@
-TeamHoly.NET BungeeCord
+BetterBungee BungeeCord
 =======================
 Layer 7 proxy designed to link Minecraft servers.
 --------------------------------------------------
@@ -7,7 +7,7 @@ This version of BungeeCord is specifically modified for the [TeamHoly.NET](https
 
 Information
 -----------
-TeamHoly.NET BungeeCord is based on the original project, maintained by [SpigotMC](https://www.spigotmc.org/). For detailed information and discussions, please refer to the [official BungeeCord thread](https://www.spigotmc.org/go/bungeecord).
+BetterBungee BungeeCord is based on the original project, maintained by [SpigotMC](https://www.spigotmc.org/). For detailed information and discussions, please refer to the [official BungeeCord thread](https://www.spigotmc.org/go/bungeecord).
 
 ### Security Warning
 
@@ -23,5 +23,5 @@ Binaries
 --------
 Precompiled binaries of BungeeCord are available for end users on [Jenkins](https://www.spigotmc.org/go/bungeecord-dl).
 
-(c) 2012-2025 SpigotMC Pty. Ltd. / Modified by TeamHoly.NET
+(c) 2012-2025 SpigotMC Pty. Ltd.
 --- 
