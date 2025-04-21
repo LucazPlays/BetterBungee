@@ -58,6 +58,7 @@ import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.BossBar;
 import net.md_5.bungee.protocol.packet.Commands;
+import net.md_5.bungee.protocol.packet.FinishConfiguration;
 import net.md_5.bungee.protocol.packet.KeepAlive;
 import net.md_5.bungee.protocol.packet.Kick;
 import net.md_5.bungee.protocol.packet.Login;
@@ -810,12 +811,13 @@ public class DownstreamBridge extends PacketHandler
     }
 
     @Override
-    public void channelReadComplete(ChannelWrapper channel) throws Exception
+    public void handle(FinishConfiguration finishConfiguration) throws Exception
     {
-        if ( con.isConnected() )
-        {
-            con.getCh().forceFlush();
-        }
+        // the clients protocol will change to GAME after this packet
+        con.unsafe().sendPacket( finishConfiguration );
+        // send queued packets as early as possible
+        con.sendQueuedPackets();
+        throw CancelSendSignal.INSTANCE;
     }
 
     @Override

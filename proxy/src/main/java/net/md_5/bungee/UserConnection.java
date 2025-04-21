@@ -334,7 +334,7 @@ public final class UserConnection implements ProxiedPlayer
     {
         Preconditions.checkNotNull( request, "request" );
 
-        ch.getHandle().eventLoop().execute( () -> connect0( request ) );
+        ch.scheduleIfNecessary( () -> connect0( request ) );
     }
 
     private void connect0(final ServerConnectRequest request)
@@ -776,6 +776,11 @@ public final class UserConnection implements ProxiedPlayer
     public String getExtraDataInHandshake()
     {
         return this.getPendingConnection().getExtraDataInHandshake();
+    }
+
+    public String getClientBrand()
+    {
+        return getPendingConnection().getClientBrand();
     }
 
     public void setCompressionThreshold(int compressionThreshold)
