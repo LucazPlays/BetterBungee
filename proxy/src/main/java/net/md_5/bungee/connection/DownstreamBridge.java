@@ -49,7 +49,6 @@ import net.md_5.bungee.api.score.Position;
 import net.md_5.bungee.api.score.Score;
 import net.md_5.bungee.api.score.Scoreboard;
 import net.md_5.bungee.api.score.Team;
-import net.md_5.bungee.chat.ComponentSerializer;
 import net.md_5.bungee.entitymap.EntityMap;
 import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.netty.PacketHandler;
@@ -59,6 +58,7 @@ import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
 import net.md_5.bungee.protocol.packet.BossBar;
 import net.md_5.bungee.protocol.packet.Commands;
+import net.md_5.bungee.protocol.packet.FinishConfiguration;
 import net.md_5.bungee.protocol.packet.KeepAlive;
 import net.md_5.bungee.protocol.packet.Kick;
 import net.md_5.bungee.protocol.packet.Login;
@@ -199,7 +199,7 @@ public class DownstreamBridge extends PacketHandler
         switch ( objective.getAction() )
         {
             case 0:
-                serverScoreboard.addObjective( new Objective( objective.getName(), ( objective.getValue().isLeft() ) ? objective.getValue().getLeft() : ComponentSerializer.toString( objective.getValue().getRight() ), objective.getType().toString() ) );
+                serverScoreboard.addObjective( new Objective( objective.getName(), ( objective.getValue().isLeft() ) ? objective.getValue().getLeft() : con.getChatSerializer().toString( objective.getValue().getRight() ), objective.getType().toString() ) );
                 break;
             case 1:
                 serverScoreboard.removeObjective( objective.getName() );
@@ -208,7 +208,7 @@ public class DownstreamBridge extends PacketHandler
                 Objective oldObjective = serverScoreboard.getObjective( objective.getName() );
                 if ( oldObjective != null )
                 {
-                    oldObjective.setValue( ( objective.getValue().isLeft() ) ? objective.getValue().getLeft() : ComponentSerializer.toString( objective.getValue().getRight() ) );
+                    oldObjective.setValue( ( objective.getValue().isLeft() ) ? objective.getValue().getLeft() : con.getChatSerializer().toString( objective.getValue().getRight() ) );
                     oldObjective.setType( objective.getType().toString() );
                 }
                 break;
@@ -282,9 +282,9 @@ public class DownstreamBridge extends PacketHandler
         {
             if ( team.getMode() == 0 || team.getMode() == 2 )
             {
-                t.setDisplayName( team.getDisplayName().getLeftOrCompute( ComponentSerializer::toString ) );
-                t.setPrefix( team.getPrefix().getLeftOrCompute( ComponentSerializer::toString ) );
-                t.setSuffix( team.getSuffix().getLeftOrCompute( ComponentSerializer::toString ) );
+                t.setDisplayName( team.getDisplayName().getLeftOrCompute( (component) -> con.getChatSerializer().toString( component ) ) );
+                t.setPrefix( team.getPrefix().getLeftOrCompute( (component) -> con.getChatSerializer().toString( component ) ) );
+                t.setSuffix( team.getSuffix().getLeftOrCompute( (component) -> con.getChatSerializer().toString( component ) ) );
                 t.setFriendlyFire( team.getFriendlyFire() );
                 t.setNameTagVisibility( team.getNameTagVisibility().getKey() );
                 t.setColor( team.getColor() );
@@ -561,7 +561,7 @@ public class DownstreamBridge extends PacketHandler
                 case "MessageRaw":
                 {
                     String target = in.readUTF();
-                    BaseComponent[] message = ComponentSerializer.parse( in.readUTF() );
+                    BaseComponent[] message = con.getChatSerializer().parse( in.readUTF() );
                     if ( target.equals( "ALL" ) )
                     {
                         for ( ProxiedPlayer player : bungee.getPlayers() )
@@ -628,7 +628,7 @@ public class DownstreamBridge extends PacketHandler
                     ProxiedPlayer player = bungee.getPlayer( in.readUTF() );
                     if ( player != null )
                     {
-                        BaseComponent[] kickReason = ComponentSerializer.parse( in.readUTF() );
+                        BaseComponent[] kickReason = con.getChatSerializer().parse( in.readUTF() );
                         player.disconnect( kickReason );
                     }
                     break;
@@ -811,12 +811,13 @@ public class DownstreamBridge extends PacketHandler
     }
 
     @Override
-    public void channelReadComplete(ChannelWrapper channel) throws Exception
+    public void handle(FinishConfiguration finishConfiguration) throws Exception
     {
-        if ( con.isConnected() )
-        {
-            con.getCh().forceFlush();
-        }
+        // the clients protocol will change to GAME after this packet
+        con.unsafe().sendPacket( finishConfiguration );
+        // send queued packets as early as possible
+        con.sendQueuedPackets();
+        throw CancelSendSignal.INSTANCE;
     }
 
     @Override
