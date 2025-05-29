@@ -73,6 +73,7 @@ import net.md_5.bungee.compress.CompressFactory;
 import net.md_5.bungee.conf.Configuration;
 import net.md_5.bungee.conf.YamlConfig;
 import net.md_5.bungee.forge.ForgeConstants;
+import net.md_5.bungee.jni.NativeCode;
 import net.md_5.bungee.log.BungeeLogger;
 import net.md_5.bungee.log.LoggingForwardHandler;
 import net.md_5.bungee.log.LoggingOutputStream;
@@ -231,6 +232,11 @@ public class BungeeCord extends ProxyServer
 
         if ( !Boolean.getBoolean( "net.md_5.bungee.native.disable" ) )
         {
+            if ( !NativeCode.hasDirectBuffers() )
+            {
+                logger.warning( "Memory addresses are not available in direct buffers" );
+            }
+
             if ( EncryptionUtil.nativeFactory.load() )
             {
                 logger.info( "Using mbed TLS based native cipher." );
@@ -261,6 +267,14 @@ public class BungeeCord extends ProxyServer
         if ( System.getProperty( "io.netty.leakDetectionLevel" ) == null && System.getProperty( "io.netty.leakDetection.level" ) == null )
         {
             ResourceLeakDetector.setLevel( ResourceLeakDetector.Level.DISABLED ); // Eats performance
+        }
+
+        // https://github.com/netty/netty/wiki/Netty-4.2-Migration-Guide
+        // The adaptive allocator, the new default allocator since Netty 4.2, has some memory issues.
+        // Setting it globally also ensures that any plugins would also use the pooled allocator.
+        if ( System.getProperty( "io.netty.allocator.type" ) == null )
+        {
+            System.setProperty( "io.netty.allocator.type", "pooled" );
         }
 
         eventLoops = PipelineUtils.newEventLoopGroup( 0, new ThreadFactoryBuilder().setNameFormat( "Netty IO Thread #%1$d" ).build() );
