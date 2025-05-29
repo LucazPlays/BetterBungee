@@ -1,26 +1,27 @@
-BungeeCord
-==========
+BetterBungee BungeeCord
+=======================
 Layer 7 proxy designed to link Minecraft servers.
 --------------------------------------------------
 
-BungeeCord is a sophisticated proxy and API designed mainly to teleport players between multiple Minecraft servers. It is the latest incarnation of similar software written by the author from 2011-present.
+This version of BungeeCord is specifically modified for the [TeamHoly.NET](https://teamholy.net) network. BungeeCord is a powerful proxy and API designed to teleport players between multiple Minecraft servers seamlessly. It is the latest evolution of similar software maintained by the author from 2011 to the present.
 
 Information
 -----------
-BungeeCord is maintained by [SpigotMC](https://www.spigotmc.org/) and has its own [discussion thread](https://www.spigotmc.org/go/bungeecord) with plenty of helpful information and links.
+BetterBungee BungeeCord is based on the original project, maintained by [SpigotMC](https://www.spigotmc.org/). For detailed information and discussions, please refer to the [official BungeeCord thread](https://www.spigotmc.org/go/bungeecord).
 
-### Security warning
+### Security Warning
 
-As your Minecraft servers have to run without authentication (online-mode=false) for BungeeCord to work, this poses a new security risk. Users may connect to your servers directly, under any username they wish to use. The kick "If you wish to use IP forwarding, please enable it in your BungeeCord config as well!" does not protect your Spigot servers.
+Since Minecraft servers within a BungeeCord network must run without authentication (online-mode=false), this introduces a new security risk. Users may connect directly to your servers using any username. The warning "If you wish to use IP forwarding, please enable it in your BungeeCord config as well!" does not fully protect your Spigot servers.
 
-To combat this, you need to restrict access to these servers for example with a firewall (please see [firewall guide](https://www.spigotmc.org/wiki/firewall-guide/)).
+To prevent unauthorized access, you should restrict access to these servers, for example, by using a firewall. Please see the [firewall guide](https://www.spigotmc.org/wiki/firewall-guide/) for more information.
 
 Source
 ------
-Source code is currently available on [GitHub](https://www.spigotmc.org/go/bungeecord-git).
+The source code for this modified version is available on GitHub: [BungeeCord GitHub](https://www.spigotmc.org/go/bungeecord-git).
 
 Binaries
 --------
-Precompiled binaries are available for end users on [Jenkins](https://www.spigotmc.org/go/bungeecord-dl).
+Precompiled binaries of BungeeCord are available for end users on [Jenkins](https://www.spigotmc.org/go/bungeecord-dl).
 
 (c) 2012-2025 SpigotMC Pty. Ltd.
+--- 

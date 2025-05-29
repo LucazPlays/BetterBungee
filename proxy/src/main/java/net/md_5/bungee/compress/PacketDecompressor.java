@@ -8,6 +8,7 @@ import java.util.List;
 import net.md_5.bungee.jni.zlib.BungeeZlib;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.OverflowPacketException;
+import net.md_5.bungee.protocol.OverflowPacketException;
 
 public class PacketDecompressor extends MessageToMessageDecoder<ByteBuf>
 {
