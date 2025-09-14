@@ -562,6 +562,22 @@ public class ComponentsTest
         assertNotNull( url2 );
         assertTrue( url2.getAction() == ClickEvent.Action.OPEN_URL );
         assertEquals( "http://google.com/test", url2.getValue() );
+
+        BaseComponent[] test3 = TextComponent.fromLegacyText( "Text\nhttp://google.com\n newline3" );
+        ClickEvent url3 = test3[1].getClickEvent();
+        assertNotNull( url3 );
+        assertTrue( url3.getAction() == ClickEvent.Action.OPEN_URL );
+        assertEquals( "http://google.com", url3.getValue() );
+        assertEquals( "\n newline3", BaseComponent.toPlainText( test3[2] ) );
+    }
+
+    @Test
+    public void testLong()
+    {
+        BaseComponent test = ComponentSerializer.deserialize( "{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[{\"translate\":\"%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s%1$s\",\"with\":[\"Test\"]}]}]}]}]}]}]}]}]}]}" );
+
+        assertThrows( RuntimeException.class, test::toLegacyText );
+        assertThrows( RuntimeException.class, test::toPlainText );
     }
 
     @Test
@@ -867,5 +883,12 @@ public class ComponentsTest
     private static String fromAndToLegacyText(String legacyText)
     {
         return BaseComponent.toLegacyText( TextComponent.fromLegacyText( legacyText ) );
+    }
+
+    @Test
+    public void testArrayParsing()
+    {
+        assertEquals( "Outfluencer is very cool bdfg28dhzcathisisacoolcomponent",
+            ComponentSerializer.deserialize( "[Outfluencer,[\" \",is,[\" very\",\" cool \",[b,dfg28dhz,[c,[a,thisisacoolcomponent]]]]]]" ).toPlainText() );
     }
 }

@@ -29,10 +29,11 @@ import net.md_5.bungee.api.chat.hover.content.ItemSerializer;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import net.md_5.bungee.api.chat.hover.content.TextSerializer;
 import net.md_5.bungee.api.dialog.Dialog;
+import net.md_5.bungee.api.dialog.action.Action;
 import net.md_5.bungee.api.dialog.chat.ShowDialogClickEvent;
-import net.md_5.bungee.dialog.ChatClickEventWrapperSerializer;
-import net.md_5.bungee.dialog.DialogSerializer;
-import net.md_5.bungee.dialog.ShowDialogClickEventSerializer;
+import net.md_5.bungee.serializer.dialog.DialogActionSerializer;
+import net.md_5.bungee.serializer.dialog.DialogSerializer;
+import net.md_5.bungee.serializer.dialog.ShowDialogClickEventSerializer;
 import org.jetbrains.annotations.ApiStatus;
 
 @ApiStatus.Experimental
@@ -68,7 +69,7 @@ public class VersionedComponentSerializer implements JsonDeserializer<BaseCompon
                 // Dialogs
                 registerTypeAdapter( Dialog.class, dialogSerializer ).
                 registerTypeAdapter( ShowDialogClickEvent.class, new ShowDialogClickEventSerializer() ).
-                registerTypeAdapter( ChatClickEventWrapperSerializer.class, new ChatClickEventWrapperSerializer() ).
+                registerTypeAdapter( Action.class, new DialogActionSerializer() ).
                 create();
     }
 
@@ -260,6 +261,18 @@ public class VersionedComponentSerializer implements JsonDeserializer<BaseCompon
         {
             return new TextComponent( json.getAsString() );
         }
+
+        if ( json.isJsonArray() )
+        {
+            JsonArray arr = json.getAsJsonArray();
+            BaseComponent[] components = new BaseComponent[ arr.size() ];
+            for ( int i = 0; i < arr.size(); i++ )
+            {
+                components[i] = deserialize( arr.get( i ), BaseComponent.class, context );
+            }
+            return TextComponent.fromArray( components );
+        }
+
         JsonObject object = json.getAsJsonObject();
         if ( object.has( "translate" ) )
         {

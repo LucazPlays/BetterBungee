@@ -46,7 +46,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jline.console.ConsoleReader;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Synchronized;
@@ -86,8 +85,11 @@ import net.md_5.bungee.protocol.packet.PluginMessage;
 import net.md_5.bungee.query.RemoteQuery;
 import net.md_5.bungee.scheduler.BungeeScheduler;
 import net.md_5.bungee.util.CaseInsensitiveMap;
-import org.fusesource.jansi.AnsiConsole;
-import org.slf4j.impl.JDK14LoggerFactory;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
+import org.slf4j.jul.JDK14LoggerFactory;
 
 /**
  * Main BungeeCord proxy class.
@@ -148,7 +150,7 @@ public class BungeeCord extends ProxyServer
     @Getter
     private final BungeeScheduler scheduler = new BungeeScheduler();
     @Getter
-    private final ConsoleReader consoleReader;
+    private final LineReader consoleReader;
     @Getter
     private final Logger logger;
     @Getter
@@ -180,7 +182,6 @@ public class BungeeCord extends ProxyServer
         private BungeeChannelInitializer serverInfoChannelInitializer;
     };
 
-    @SuppressFBWarnings("DM_DEFAULT_ENCODING")
     public BungeeCord() throws IOException
     {
         // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
@@ -196,10 +197,11 @@ public class BungeeCord extends ProxyServer
         // BungeeCord. This version is only used when extracting the libraries to their temp folder.
         System.setProperty( "library.jansi.version", "BungeeCord" );
 
-        AnsiConsole.systemInstall();
-        consoleReader = new ConsoleReader();
-        consoleReader.setExpandEvents( false );
-        consoleReader.addCompleter( new ConsoleCommandCompleter( this ) );
+        Terminal terminal = TerminalBuilder.builder().build();
+        consoleReader = LineReaderBuilder.builder().terminal( terminal )
+                .option( LineReader.Option.DISABLE_EVENT_EXPANSION, true )
+                .completer( new ConsoleCommandCompleter( this ) )
+                .build();
 
         logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
         JDK14LoggerFactory.LOGGER = logger;
@@ -260,7 +262,6 @@ public class BungeeCord extends ProxyServer
      *
      * @throws Exception any critical errors encountered
      */
-    @SuppressFBWarnings("RV_RETURN_VALUE_IGNORED_BAD_PRACTICE")
     public void start() throws Exception
     {
         System.setProperty( "io.netty.selectorAutoRebuildThreshold", "0" ); // Seems to cause Bungee to stop accepting connections
@@ -430,8 +431,6 @@ public class BungeeCord extends ProxyServer
     }
 
     // This must be run on a separate thread to avoid deadlock!
-    @SuppressFBWarnings("DM_EXIT")
-    @SuppressWarnings("TooBroadCatch")
     private void independentThreadStop(final String reason, boolean callSystemExit)
     {
         // Acquire the shutdown lock

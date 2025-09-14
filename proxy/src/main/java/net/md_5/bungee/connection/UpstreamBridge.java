@@ -29,7 +29,6 @@ import net.md_5.bungee.netty.PacketHandler;
 import net.md_5.bungee.protocol.PacketWrapper;
 import net.md_5.bungee.protocol.Protocol;
 import net.md_5.bungee.protocol.ProtocolConstants;
-import net.md_5.bungee.protocol.TagUtil;
 import net.md_5.bungee.protocol.packet.Chat;
 import net.md_5.bungee.protocol.packet.ClientChat;
 import net.md_5.bungee.protocol.packet.ClientCommand;
@@ -46,8 +45,8 @@ import net.md_5.bungee.protocol.packet.StartConfiguration;
 import net.md_5.bungee.protocol.packet.TabCompleteRequest;
 import net.md_5.bungee.protocol.packet.TabCompleteResponse;
 import net.md_5.bungee.protocol.packet.UnsignedClientCommand;
+import net.md_5.bungee.protocol.util.TagUtil;
 import net.md_5.bungee.util.AllowedCharacters;
-import se.llbit.nbt.SpecificTag;
 
 public class UpstreamBridge extends PacketHandler
 {
@@ -385,7 +384,7 @@ public class UpstreamBridge extends PacketHandler
     @Override
     public void handle(CustomClickAction customClickAction) throws Exception
     {
-        CustomClickEvent event = new CustomClickEvent( con, customClickAction.getId(), TagUtil.toJson( (SpecificTag) customClickAction.getData() ) );
+        CustomClickEvent event = new CustomClickEvent( con, customClickAction.getId(), TagUtil.toJson( customClickAction.getData() ) );
         if ( bungee.getPluginManager().callEvent( event ).isCancelled() )
         {
             throw CancelSendSignal.INSTANCE;
