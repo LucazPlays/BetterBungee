@@ -46,6 +46,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.Getter;
+import lombok.Locked;
 import lombok.Setter;
 import lombok.Synchronized;
 import net.md_5.bungee.api.CommandSender;
@@ -528,18 +529,12 @@ public class BungeeCord extends ProxyServer
      *
      * @param packet the packet to send
      */
+    @Locked.Read("connectionLock")
     public void broadcast(DefinedPacket packet)
     {
-        connectionLock.readLock().lock();
-        try
+        for ( UserConnection con : connections.values() )
         {
-            for ( UserConnection con : connections.values() )
-            {
-                con.unsafe().sendPacket( packet );
-            }
-        } finally
-        {
-            connectionLock.readLock().unlock();
+            con.unsafe().sendPacket( packet );
         }
     }
 
@@ -610,17 +605,11 @@ public class BungeeCord extends ProxyServer
     }
 
     @Override
+    @Locked.Read("connectionLock")
     @SuppressWarnings("unchecked")
     public Collection<ProxiedPlayer> getPlayers()
     {
-        connectionLock.readLock().lock();
-        try
-        {
-            return Collections.unmodifiableCollection( new HashSet( connections.values() ) );
-        } finally
-        {
-            connectionLock.readLock().unlock();
-        }
+        return Collections.unmodifiableCollection( new HashSet( connections.values() ) );
     }
 
     @Override
@@ -630,16 +619,10 @@ public class BungeeCord extends ProxyServer
     }
 
     @Override
+    @Locked.Read("connectionLock")
     public ProxiedPlayer getPlayer(String name)
     {
-        connectionLock.readLock().lock();
-        try
-        {
-            return connections.get( name );
-        } finally
-        {
-            connectionLock.readLock().unlock();
-        }
+        return connections.get( name );
     }
 
     public UserConnection getPlayerByOfflineUUID(UUID uuid)
@@ -659,16 +642,10 @@ public class BungeeCord extends ProxyServer
     }
 
     @Override
+    @Locked.Read("connectionLock")
     public ProxiedPlayer getPlayer(UUID uuid)
     {
-        connectionLock.readLock().lock();
-        try
-        {
-            return connectionsByUUID.get( uuid );
-        } finally
-        {
-            connectionLock.readLock().unlock();
-        }
+        return connectionsByUUID.get( uuid );
     }
 
     @Override
@@ -794,21 +771,15 @@ public class BungeeCord extends ProxyServer
         return true;
     }
 
+    @Locked.Write("connectionLock")
     public void removeConnection(UserConnection con)
     {
-        connectionLock.writeLock().lock();
-        try
+        // TODO See #1218
+        if ( connections.get( con.getName() ) == con )
         {
-            // TODO See #1218
-            if ( connections.get( con.getName() ) == con )
-            {
-                connections.remove( con.getName() );
-                connectionsByUUID.remove( con.getUniqueId() );
-                connectionsByOfflineUUID.remove( con.getPendingConnection().getOfflineId() );
-            }
-        } finally
-        {
-            connectionLock.writeLock().unlock();
+            connections.remove( con.getName() );
+            connectionsByUUID.remove( con.getUniqueId() );
+            connectionsByOfflineUUID.remove( con.getPendingConnection().getOfflineId() );
         }
     }
 
